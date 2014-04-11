@@ -1,0 +1,59 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="css/main.css">
+    <script type="text/javascript" src="/js/loader.js"></script>
+    <script type="text/javascript" src="/js/player.js"></script>
+  </head>
+  <body>
+  </body>
+  <script type="text/javascript">
+    window.addEventListener('load', function(){
+      window.AudioContext = window.AudioContext || window.webkitAudioContext;
+      window.audioContext = new AudioContext();
+      window.player = new Player(window.audioContext)
+    
+      player.load('/sounds/bass.wav');
+      player.oscillators = [];
+
+      player.connect = function(freq, volume) {
+        osc = player.context.createOscillator();
+        osc.type = "sine";
+        osc.frequency.value = freq;
+       
+        gain = player.context.createGain();
+        gain.gain.value = volume;
+
+        osc.connect(gain);
+        gain.connect(player.context.destination);
+
+        osc.start(0);
+        player.oscillators.push([osc, gain]);
+      }
+
+      player.stop = function() {
+        player.oscillators.forEach(function(o, i){
+          o[0].disconnect(player.context.destination);
+        });
+        player.oscillators = [];
+      }
+
+      player.params.freq = 200;
+    
+      document.querySelector('html').addEventListener('mousemove', function(e){
+        freq = parseInt(100 + e.x / this.clientWidth * 300)
+        vol = parseInt((1 - e.y / this.clientHeight) * 100)
+
+        document.querySelector('body').innerHTML = 'click para agregar un oscilador a ' + freq + ' Hz. al ' + vol + '% de volumen';
+      }); 
+
+      document.querySelector('html').addEventListener('click', function(e){
+        freq = parseInt(100 + e.x / this.clientWidth * 300)
+        vol = 1 - e.y / this.clientHeight
+        console.log('adding a ' + freq + ' oscillator at ' + vol * 100 + '%');
+
+        player.connect(freq, vol);
+      });
+    });
+  </script>
+</html>
