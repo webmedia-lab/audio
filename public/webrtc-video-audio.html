@@ -1,0 +1,66 @@
+<html>
+<head>
+  <script type="text/javascript">
+    // we can pass this to getUserMedia as the first parameter:
+    // navigator.getUserMedia(hdConstraints, successCallBack, errorCallback);
+    var hdConstraints = {
+      video: {
+        mandatory: {
+          minWidth: 1280,
+          minHeight: 720
+        }
+      },
+      audio : true
+    };
+
+    var vgaConstraints = {
+      video: {
+        mandatory: {
+          maxWidth: 640,
+          maxHeight: 360
+        }
+      },
+      audio: true
+    };
+
+    navigator.getUserMedia  = navigator.getUserMedia ||
+                              navigator.webkitGetUserMedia ||
+                              navigator.mozGetUserMedia ||
+                              navigator.msGetUserMedia;
+
+    window.AudioContext = window.AudioContext ||
+                          window.webkitAudioContext;
+
+
+    var successCallBack = function(localMediaStream) {
+      // video
+      var video = document.querySelector('video');
+      video.src = window.URL.createObjectURL(localMediaStream);
+
+      // audio
+      var context = new AudioContext();
+      var microphone = context.createMediaStreamSource(localMediaStream);
+      var filter = context.createBiquadFilter();
+
+      // microphone -> filter -> destination.
+      microphone.connect(filter);
+      filter.connect(context.destination);
+    }
+
+    var errorCallback = function(e) {
+      console.log('Rejected!', e);
+    };
+
+    if (navigator.getUserMedia) {
+      navigator.getUserMedia({audio: true, video: true}, successCallBack, errorCallback);
+    } else {
+      alert('Something went wrong!');
+    }
+  </script>
+</head>
+<body style="background-color: black;">
+  <center>
+    <video autoplay controls></video>
+  </center>
+</body>
+</html>
