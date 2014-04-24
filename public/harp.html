@@ -1,0 +1,99 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="js/extensions.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+      .note { border-bottom: 1px solid #555 }
+      .container { margin: 20px 100px auto; } 
+    </style>
+  </head>
+  <body>
+    <div class="container"></div>
+  </body>
+  <script type="text/javascript">
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
+
+    window.Scale = function(freqs, octaves) {
+      self = {}
+      self.freqs = []
+
+      for(var octave = octaves[0]; octave <= octaves[1]; octave++){
+        freqs.forEach(function(freq){ 
+          self.freqs.push(freq * Math.pow(2, octave))
+        });
+      }
+   
+      self.count = function(){ return self.freqs.length };
+      self.get = function(note){ return self.freqs[note] };
+
+      return self;
+    }
+
+    window.Harp = function(context, scale){
+      var self = {};
+
+      var ctx = context;
+      var scale = scale;
+      var amplifier = context.createGain();
+      var oscillator = context.createOscillator();
+
+      oscillator.connect(amplifier);
+      amplifier.connect(ctx.destination);
+      oscillator.start(0);
+
+      self.play = function(){
+        oscillator.connect(amplifier);
+      }
+
+      self.stop = function(){
+        oscillator.disconnect();
+      }
+
+      self.note = function(note, intensity){
+        oscillator.frequency.value = scale.get(note);
+        amplifier.gain.value = intensity;
+      }
+
+
+      self.scale = function(newScale){ 
+        if(newScale) scale = newScale
+
+        return scale 
+      }
+
+      self.renderOn = function(container){
+        container.innerHTML = '';
+        for(var note = scale.count(); note >= 0; note--){
+          container.innerHTML += '<div class="note" data-note="' + note + '">'+ scale.get(note) +'</div>';
+        }
+  
+        var height = (window.innerHeight - 100) / scale.count() + 'px';
+        document.querySelectorAll('.note').each(function(e){ 
+          e.style.height = height;
+          e.addEventListener('mouseenter', function(e){ 
+            console.log(e.target.dataset.note);
+            window.harp.note(e.target.dataset.note, 0.5)
+           });
+
+          e.addEventListener('touchmove', function(e){ 
+            e.preventDefault(); 
+            console.log(e.target.dataset.note);
+            window.harp.note(e.target.dataset.note, 0.5) 
+          });
+        });
+      }
+      
+      return self;
+    }
+
+    window.addEventListener('load', function(){ 
+      window.context = new AudioContext();
+      window.scale = new Scale([300,337.5,375,450,500], [-1,1]);
+      window.harp = Harp(context, scale);
+
+      harp.renderOn(document.querySelector('.container'));
+      harp.play();
+    });
+  </script>
+</html>
