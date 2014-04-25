@@ -80,7 +80,7 @@ console.log(notex, notey)
       b =   0 + Math.floor(255 * (position.x / (max.x / 2)))
 
       ctx = canvas.getContext('2d')
-      ctx.fillStyle = rgb(r,g,b)
+      ctx.fillStyle ='rgb(' + r + ',' + g + ',' + b + ')';
       ctx.fillRect(0, 0, canvas.width, canvas.height)
     }
 
