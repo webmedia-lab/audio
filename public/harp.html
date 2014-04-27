@@ -12,30 +12,45 @@
     <div class="container"></div>
   </body>
   <script type="text/javascript">
-    window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
-    window.Scale = function(freqs, octaves) {
+    window.Scale = function(octaveInterval) {
+      // Octave #4 
+      var _standardNotes = {
+        'C': 261.6,
+        'D': 293.7,
+        'E': 329.6,
+        'F': 349.2,
+        'G': 392.0,
+        'A': 440.0,
+        'B': 493.9
+      };
+
       self = {}
-      self.freqs = []
+      self.freqs = {}
 
-      for(var octave = octaves[0]; octave <= octaves[1]; octave++){
-        freqs.forEach(function(freq){
-          self.freqs.push(freq * Math.pow(2, octave))
-        });
+      for (var octaveOffset = octaveInterval[0];
+          octaveOffset <= octaveInterval[1];
+          octaveOffset++)
+      {
+        for (var keyNote in _standardNotes) {          
+          self.freqs[keyNote + octaveOffset] = _standardNotes[keyNote] * Math.pow(2, octaveOffset);
+        }
       }
 
-      self.count = function(){ return self.freqs.length };
-      self.get = function(note){ return self.freqs[note] };
+      self.count = function()    { return self.freqs.length };
+      self.get   = function(note){ return self.freqs[note]  };
 
       return self;
     }
+
+    window.AudioContext = window.AudioContext || window.webkitAudioContext;
 
     window.Harp = function(context, scale){
       var self = {};
 
       var ctx = context;
       var scale = scale;
-      var amplifier = context.createGain();
+      var amplifier  = context.createGain();
       var oscillator = context.createOscillator();
       var isOn = false;
 
