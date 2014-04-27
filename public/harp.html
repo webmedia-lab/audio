@@ -13,9 +13,10 @@
   </body>
   <script type="text/javascript">
 
-    window.Scale = function(octaveInterval) {
-      // Octave #4 
-      var _standardNotes = {
+    window.Scale = function() {
+      // Octave #4
+      var _standardOctave = 4;
+      var _standardNotes  = {
         'C': 261.6,
         'D': 293.7,
         'E': 329.6,
@@ -25,20 +26,9 @@
         'B': 493.9
       };
 
-      self = {}
-      self.freqs = {}
-
-      for (var octaveOffset = octaveInterval[0];
-          octaveOffset <= octaveInterval[1];
-          octaveOffset++)
-      {
-        for (var keyNote in _standardNotes) {          
-          self.freqs[keyNote + octaveOffset] = _standardNotes[keyNote] * Math.pow(2, octaveOffset);
-        }
-      }
-
-      self.count = function()    { return self.freqs.length };
-      self.get   = function(note){ return self.freqs[note]  };
+      self.get = function(note, octave) {
+        return _standardNotes[note] * Math.pow(2, octave - _standardOctave);
+      };
 
       return self;
     }
@@ -68,8 +58,8 @@
         isOn = false;
       }
 
-      self.note = function(note, intensity){
-        oscillator.frequency.value = scale.get(note);
+      self.note = function(note, octave, intensity){
+        oscillator.frequency.value = scale.get(note, octave);
         amplifier.gain.value = intensity;
       }
 
@@ -82,22 +72,22 @@
 
       self.renderOn = function(container){
         container.innerHTML = '<input type="button" id="toogleSound" value="ON/OFF"/>';
-        for(var note = scale.count(); note >= 0; note--){
-          container.innerHTML += '<div class="note" data-note="' + note + '">'+ scale.get(note) +'</div>';
-        }
+        ['C','D','E','F','G','A','B'].forEach(function(note) {
+          container.innerHTML += '<div class="note" data-note="' + note + '">'+ scale.get(note, 4) +'</div>';
+        });
 
-        var height = (window.innerHeight - 100) / scale.count() + 'px';
+        var height = (window.innerHeight - 100) / 8 + 'px';
         document.querySelectorAll('.note').each(function(e){
           e.style.height = height;
           e.addEventListener('mouseenter', function(e){
             console.log(e.target.dataset.note);
-            window.harp.note(e.target.dataset.note, 0.5)
+            window.harp.note(e.target.dataset.note, 4, 0.5)
           });
 
           e.addEventListener('touchmove', function(e){
             e.preventDefault();
             console.log(e.target.dataset.note);
-            window.harp.note(e.target.dataset.note, 0.5)
+            window.harp.note(e.target.dataset.note, 4, 0.5)
           });
         });
 
@@ -111,7 +101,7 @@
 
     window.addEventListener('load', function(){
       window.context = new AudioContext();
-      window.scale = new Scale([300,337.5,375,450,500], [-1,1]);
+      window.scale = new Scale();
       window.harp = Harp(context, scale);
 
       harp.renderOn(document.querySelector('.container'));
