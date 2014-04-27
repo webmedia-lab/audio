@@ -1,6 +1,10 @@
+require './models/index_generator'
+
+index_generator = IndexGenerator.new 'public'
+index_generator.write_index
+
 use Rack::Static,
-  :urls => ["/", "/images", "/js", "/css"],
-  :root => "public"
+  urls: ['/images', '/js', '/css']
 
 run lambda { |env|
   [
