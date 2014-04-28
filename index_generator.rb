@@ -19,5 +19,3 @@ class IndexGenerator
     file_content
   end
 end
-
-#IndexGenerator.new(Dir['./examples/*']).write

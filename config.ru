@@ -1,10 +1,10 @@
-require './models/index_generator'
+require './index_generator'
 
-index_generator = IndexGenerator.new 'public'
-index_generator.write_index
+# we get only files from examples dir
+IndexGenerator.new(Dir['./examples/*'].select { |f| File.file?(f) }).write
 
 use Rack::Static,
-  urls: ['/images', '/js', '/css']
+  urls: ['/js', '/css', '/examples', '/sounds']
 
 run lambda { |env|
   [
@@ -13,6 +13,6 @@ run lambda { |env|
       'Content-Type'  => 'text/html',
       'Cache-Control' => 'public, max-age=86400'
     },
-    File.open('public/index.html', File::RDONLY)
+    File.open('index.html', File::RDONLY)
   ]
 }
