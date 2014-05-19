@@ -1,0 +1,68 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../css/main.css">
+  </head>
+  <body>
+
+    Seleccioname y arrastrameeeee !!!
+
+    <script type="text/javascript">
+      function Player(context){
+        this.context = context;
+        this.sounds = {};
+        this.gainNode = context.createGain();
+      
+        self = this;
+      
+        this.load = function load(url) {
+          var request = new XMLHttpRequest();
+      
+          request.open('GET', url, true);
+          request.responseType = 'arraybuffer';
+          request.onload = function(){
+            context.decodeAudioData( request.response,
+                                     function(buffer){ self.sounds[url] = buffer; },
+                                     function(error){ console.log(error) } );
+          }
+      
+          request.send();
+        }
+      
+        this.play = function(url, time) {
+          var source = context.createBufferSource();
+          source.buffer = this.sounds[url];
+          source.connect(this.gainNode);
+          this.gainNode.connect(context.destination);
+      
+          source.start(time)
+        }
+      
+        this.playSequence = function(){
+          time = this.context.currentTime
+          this.play('/sounds/click.mp3', time + 0)
+          this.play('/sounds/click.mp3', time + 0.3)
+          this.play('/sounds/click.mp3', time + 0.6)
+          this.play('/sounds/click.mp3', time + 0.9)
+      
+          this.play('/sounds/reload.wav', time + 0.15)
+          this.play('/sounds/reload.wav', time + 0.70)
+        }
+      }
+      
+      window.addEventListener('load', function(){
+        window.AudioContext = window.AudioContext || window.webkitAudioContext;
+        window.player = new Player(new AudioContext());
+      
+        player.load('/sounds/reload.wav');
+        player.load('/sounds/click.mp3');
+      
+        document.querySelector('html').addEventListener('drag', function(e){
+          value = e.x / this.clientWidth
+          player.gainNode.gain.value = value * value
+          player.playSequence();
+        }, false);
+      });
+    </script>
+  <body>
+</html>

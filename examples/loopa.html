@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <script src="/js/recorderjs/recorder.js"></script>
+    <link rel="stylesheet" href="css/main.css">
+    <style>
+      .container { margin: 40px 100px auto; } 
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <button id="record">grabar</button>
+    </div>
+  </body>
+  <script type="text/javascript">
+    //cross browser api
+    var AudioContext = window.AudioContext || window.webkitAudioContext;
+    navigator.getUserMedia = (navigator.getUserMedia ||
+                          navigator.webkitGetUserMedia ||
+                          navigator.mozGetUserMedia ||
+                          navigator.msGetUserMedia);
+
+    var context = new AudioContext();
+    var mic = null;
+    var rec = null;
+    var tracks = [];
+    var recording = false;
+
+    navigator.getUserMedia({ audio: true }, function(stream) {
+      mic = context.createMediaStreamSource(stream);
+      rec = new Recorder(mic, {workerPath: '/js/recorderjs/recorderWorker.js'});
+    });
+
+    function start(){
+      rec.record();
+    }
+
+    function stop(){
+      rec.stop();
+      rec.getBuffer(function(buffers) {
+        var newSource = context.createBufferSource();
+        var newBuffer = context.createBuffer( 2, buffers[0].length, context.sampleRate );
+        
+        newBuffer.getChannelData(0).set(buffers[0]);
+        newBuffer.getChannelData(1).set(buffers[1]);
+        newSource.buffer = newBuffer;
+        newSource.loop = true;
+        
+        newSource.connect(context.destination);
+        newSource.start(0);
+      
+        tracks.push(newSource);
+        rec.clear();
+        rec = new Recorder(mic, {workerPath: '/js/recorderjs/recorderWorker.js'});
+      });
+    }
+
+    document.getElementById('record').addEventListener('click', function(e){
+      if(recording){
+        stop();
+        recording = false;
+        e.target.textContent = 'record'
+      }else{
+        start();
+        recording = true;
+        e.target.textContent = 'stop'
+      }
+    });
+  </script>
+</html>

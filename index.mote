@@ -1,0 +1,29 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="css/main.css" />
+  </head>
+
+  <body>
+    <div class="container">
+      <div class="page-header">
+        <h3> Examples </h3>
+      </div>
+      <ul class="">
+        % data[:files].each do |file|
+        <li class=""><a href="{{file}}"> {{ file }} </a></li>
+        % end
+      </ul>
+      <div class="page-header">
+        <h3> Links </h3>
+      </div>
+      <ul>
+        % data[:links].each do |link|
+        <li>
+          <a href="{{link[:url]}}"> {{ link[:label] }} </a> &nbsp;&nbsp; ({{ link[:tags] }})
+        </li>
+        % end
+      </ul>
+    </div>
+  </body>
+</html>
