@@ -1,13 +1,3 @@
-use Rack::Static,
-  urls: ['/js', '/css', '/examples', '/sounds']
+use Rack::Static, urls: [''], index: 'index.html'
 
-app = proc do |env|
-  headers = {
-    'Content-Type'  => 'text/html',
-    'Cache-Control' => 'public, max-age=86400'
-  }
-
-  [ 200, headers, File.open('index.html', File::RDONLY) ]
-end
-
-run app
+run ->(env){ [200, {}, File.open('./index.html', File::RDONLY)] }

@@ -1,0 +1,50 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="stylesheet" href="../css/main.css">
+  </head>
+  <body>
+  </body>
+  <script type="text/javascript">
+   window.AudioContext = window.AudioContext || window.webkitAudioContext;
+   window.context = new AudioContext();
+
+   var saw = context.createOscillator();
+   var volume = context.createGain();
+   var sine = context.createOscillator();
+   var sineGain = context.createGain();
+   var d1 = context.createDelay();
+   var d2 = context.createDelay();
+   var feedback = context.createGain();
+
+   //set up our oscillator types
+   saw.type = saw.SAWTOOTH;
+
+   sine.type = sine.SINE;
+   sine.frequency.value = 0.02;
+   //set the amplitude of the modulation
+   sineGain.gain.value = 1;
+
+   //connect the dots
+   sine.connect(sineGain);
+   sineGain.connect(saw.frequency);
+
+   //delay
+   d1.delayTime.value = 1;
+   d1.delayTime.value = 1;
+   d1.connect(d2);
+   d2.connect(feedback);
+   feedback.connect(d1);
+   feedback.gain.value = 0.1;
+
+   saw.connect(d1);
+   
+   saw.connect(volume);
+   d1.connect(volume);
+
+   volume.connect(context.destination);
+   
+   sine.start();
+   saw.start();
+  </script>
+</html>

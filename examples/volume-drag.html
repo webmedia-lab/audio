@@ -40,13 +40,13 @@
       
         this.playSequence = function(){
           time = this.context.currentTime
-          this.play('/sounds/click.mp3', time + 0)
-          this.play('/sounds/click.mp3', time + 0.3)
-          this.play('/sounds/click.mp3', time + 0.6)
-          this.play('/sounds/click.mp3', time + 0.9)
+          this.play('../sounds/click.mp3', time + 0)
+          this.play('../sounds/click.mp3', time + 0.3)
+          this.play('../sounds/click.mp3', time + 0.6)
+          this.play('../sounds/click.mp3', time + 0.9)
       
-          this.play('/sounds/reload.wav', time + 0.15)
-          this.play('/sounds/reload.wav', time + 0.70)
+          this.play('../sounds/reload.wav', time + 0.15)
+          this.play('../sounds/reload.wav', time + 0.70)
         }
       }
       
@@ -54,8 +54,8 @@
         window.AudioContext = window.AudioContext || window.webkitAudioContext;
         window.player = new Player(new AudioContext());
       
-        player.load('/sounds/reload.wav');
-        player.load('/sounds/click.mp3');
+        player.load('../sounds/reload.wav');
+        player.load('../sounds/click.mp3');
       
         document.querySelector('html').addEventListener('drag', function(e){
           value = e.x / this.clientWidth

@@ -72,13 +72,11 @@
         document.querySelectorAll('.note').each(function(e){ 
           e.style.height = height;
           e.addEventListener('mouseenter', function(e){ 
-            console.log(e.target.dataset.note);
             window.harp.note(e.target.dataset.note, 0.5)
            });
 
           e.addEventListener('touchmove', function(e){ 
             e.preventDefault(); 
-            console.log(e.target.dataset.note);
             window.harp.note(e.target.dataset.note, 0.5) 
           });
         });
