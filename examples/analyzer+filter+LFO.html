@@ -18,33 +18,25 @@
        var input;
 
        var filter = AC.createBiquadFilter();
-       filter.type = "bandpass";
-       filter.gain.value = 1000;
-       filter.frequency.value = 1000.0;
+       filter.type = "lowpass";
+       filter.gain.value = 100;
+       filter.frequency.value = 500.0;
        filter.Q.value = 10.0;
 
 
        var lfo = AC.createOscillator();
        var lfo_amp = AC.createGain();
-       lfo.frequency.value = 1;
-       lfo_amp.gain.value = 500.0;
+       lfo.frequency.value = 2;
+       lfo_amp.gain.value = 450.0;
        lfo.connect(lfo_amp);
        lfo_amp.connect(filter.detune);
        lfo.start();
-
-       var delay = AC.createDelay();
-       delay.delayTime.value = 0.5;
-
-       var feedback = AC.createGain();
-       feedback.gain.value = 0.5;
-
-       delay.connect(feedback);
-       feedback.connect(delay);
+       
        
        var analyzer = AC.createAnalyser();
        var bufferLength = analyzer.frequencyBinCount;
        var dataArray = new Uint8Array(bufferLength)
-       analyzer.fftSize = 2048;
+       analyzer.fftSize = 4096;
              
      
        var draw = function() {
@@ -85,10 +77,8 @@
        var init = function (stream) {
          input = AC.createMediaStreamSource(stream);
          input.connect(filter);
-         filter.connect(delay);
-         filter.connect(AC.destination);
-         delay.connect(AC.destination);
          filter.connect(analyzer);
+         analyzer.connect(AC.destination);
 
          analyzer.getByteTimeDomainData(dataArray);         
          draw();
