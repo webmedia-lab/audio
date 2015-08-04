@@ -32,11 +32,11 @@
        lfo_amp.connect(filter.detune);
        lfo.start();
 
-       var delay = AC.createDelay();
-       delay.delayTime.value = 0.5;
+       var delay = AC.createDelay(2.0);
+       delay.delayTime.value = 2;
 
        var feedback = AC.createGain();
-       feedback.gain.value = 0.5;
+       feedback.gain.value = 0.9;
 
        delay.connect(feedback);
        feedback.connect(delay);
