@@ -10,7 +10,7 @@
                             navigator.mozGetUserMedia ||
                             navigator.msGetUserMedia);
      
-     var Analyzer = function() {
+     var FX = function() {
        var canvas = document.getElementById('analyzer');
        var CC = canvas.getContext('2d');
 
@@ -40,6 +40,9 @@
 
        delay.connect(feedback);
        feedback.connect(delay);
+
+       var master = AC.createGain();
+       master.value = 1.0;
        
        var analyzer = AC.createAnalyser();
        var bufferLength = analyzer.frequencyBinCount;
@@ -87,8 +90,9 @@
          input.connect(filter);
          filter.connect(delay);
          filter.connect(AC.destination);
-         delay.connect(AC.destination);
-         filter.connect(analyzer);
+         delay.connect(master);
+         master.connect(AC.destination);
+         master.connect(analyzer);
 
          analyzer.getByteTimeDomainData(dataArray);         
          draw();
@@ -97,7 +101,7 @@
        navigator.getMedia( { audio: true }, init, function(){ console.log('error requesting access to user media') } )
      };
 
-     Analyzer();
+     var FX = FX();
     </script>
   </body>
 </html>
